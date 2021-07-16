@@ -48,16 +48,18 @@ typedef enum juice_nat_test_phase {
 	JUICE_NAT_DETECT_TESTIII
 } juice_nat_detect_phase_t;
 
-#define DO_TESTI(sock, srv_addr, timeout, mapped_addr, changed_ip) \
-	juice_nat_do_test(sock, srv_addr, timeout, JUICE_NAT_DETECT_TESTI, mapped_addr, changed_ip);
-#define DO_TESTII(sock, srv_addr, timeout, mapped_addr, changed_ip) \
-	juice_nat_do_test(sock, srv_addr, timeout, JUICE_NAT_DETECT_TESTII, mapped_addr, changed_ip);
-#define DO_TESTIII(sock, srv_addr, timeout, mapped_addr, changed_ip) \
-	juice_nat_do_test(sock, srv_addr, timeout, JUICE_NAT_DETECT_TESTIII, mapped_addr, changed_ip);
+
+#define DO_TESTI(sock, srv_addr, timeout, mapped_addr, changed_addr) \
+	juice_nat_do_test(sock, srv_addr, timeout, JUICE_NAT_DETECT_TESTI, mapped_addr, changed_addr);
+#define DO_TESTII(sock, srv_addr, timeout, mapped_addr, changed_addr) \
+	juice_nat_do_test(sock, srv_addr, timeout, JUICE_NAT_DETECT_TESTII, mapped_addr, changed_addr);
+#define DO_TESTIII(sock, srv_addr, timeout, mapped_addr, changed_addr) \
+	juice_nat_do_test(sock, srv_addr, timeout, JUICE_NAT_DETECT_TESTIII, mapped_addr, changed_addr);
 
 const char *juice_nat_type_name(juice_nat_type_t nat_type);
-int do_test(socket_t sock, addr_record_t *srv_addr, struct timeval *timeout,
-		    juice_nat_detect_phase_t phase, addr_record_t *mapped_addr);
+int juice_nat_do_test(socket_t sock, addr_record_t *srv_addr, struct timeval *timeout,                 
+					  juice_nat_detect_phase_t phase, addr_record_t *mapped_addr,
+					  addr_record_t *changed_addr);
 juice_nat_type_t juice_nat_detect(const char *stun_host, unsigned short stun_port,
 								  addr_record_t *mapped_addr);
 

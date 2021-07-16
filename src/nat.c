@@ -42,14 +42,14 @@ static int sockaddr_equal(const struct sockaddr_storage *a,
 }
 
 int juice_nat_do_test(socket_t sock, addr_record_t *srv_addr, struct timeval *timeout,
-				   juice_nat_detect_phase_t phase, addr_record_t *mapped_addr,
-				   addr_record_t *changed_ip) {
+					  juice_nat_detect_phase_t phase, addr_record_t *mapped_addr,
+					  addr_record_t *changed_addr) {
 
 	stun_message_t msg;
 	char buffer[BUFFER_SIZE];
 
 	if (mapped_addr) memset(mapped_addr, 0, sizeof(addr_record_t));
-	if (changed_ip) memset(changed_ip, 0, sizeof(addr_record_t));
+	if (changed_addr) memset(changed_addr, 0, sizeof(addr_record_t));
 
 	memset(&msg, 0, sizeof(msg));
 	msg.msg_class = STUN_CLASS_REQUEST;
@@ -108,9 +108,9 @@ int juice_nat_do_test(socket_t sock, addr_record_t *srv_addr, struct timeval *ti
 			}
 
 			memcpy(mapped_addr, &msg.mapped, sizeof(addr_record_t));
-			if (changed_ip && msg.changed_ip.len) {
+			if (changed_addr && msg.changed_addr.len) {
 				printf("here\n");
-				memcpy(changed_ip, &msg.changed_ip, sizeof(addr_record_t));
+				memcpy(changed_addr, &msg.changed_addr, sizeof(addr_record_t));
 			}
 
 			return 0;
@@ -148,7 +148,7 @@ juice_nat_type_t juice_nat_detect(const char *stun_host, unsigned short stun_por
 								  addr_record_t *mapped_addr) {
 
 	addr_record_t local_addrs[MAX_LOCAL_ADDRESSES];
-	addr_record_t changed_ip;
+	addr_record_t changed_addr;
 	int local_addrs_count = 0;
 	udp_socket_config_t config;
 	struct timeval timeout;
@@ -177,7 +177,7 @@ juice_nat_type_t juice_nat_detect(const char *stun_host, unsigned short stun_por
 
 	timeout.tv_sec = (long)(JUICE_NAT_TIMEOUT / 1000);
 	timeout.tv_usec = (long)0;
-	int ret = DO_TESTI(sock, &srv_addrs[0], &timeout, mapped_addr, &changed_ip);
+	int ret = DO_TESTI(sock, &srv_addrs[0], &timeout, mapped_addr, &changed_addr);
 	switch (ret) {
 		case -1:
 			return JUICE_NAT_TYPE_BLOCKED;
@@ -213,8 +213,8 @@ juice_nat_type_t juice_nat_detect(const char *stun_host, unsigned short stun_por
 
 	timeout.tv_sec = (long)(JUICE_NAT_TIMEOUT / 1000);
 	timeout.tv_usec = (long)0;
-	if (changed_ip.len) {
-		ret = DO_TESTI(sock, &changed_ip, &timeout, mapped_addr2, NULL);
+	if (changed_addr.len) {
+		ret = DO_TESTI(sock, &changed_addr, &timeout, mapped_addr2, NULL);
 	}
 	else {
 		ret = DO_TESTI(sock, &srv_addrs[0], &timeout, mapped_addr2, NULL);
