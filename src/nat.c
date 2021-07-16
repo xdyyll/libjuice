@@ -109,7 +109,6 @@ int juice_nat_do_test(socket_t sock, addr_record_t *srv_addr, struct timeval *ti
 
 			memcpy(mapped_addr, &msg.mapped, sizeof(addr_record_t));
 			if (changed_addr && msg.changed_addr.len) {
-				printf("here\n");
 				memcpy(changed_addr, &msg.changed_addr, sizeof(addr_record_t));
 			}
 
